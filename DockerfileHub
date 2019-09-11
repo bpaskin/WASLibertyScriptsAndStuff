@@ -1,0 +1,17 @@
+# Pull the Liberty instance from the Docker Hub
+# different images and versions: https://hub.docker.com/_/websphere-liberty
+FROM websphere-liberty:latest
+
+# Install the features you want
+RUN installUtility install jsf-2.2 --acceptLicense
+
+# Copy the files from the local App Server to Docker and 
+# make it a run as a user
+COPY --chown=1001:0 status/server.xml /config/
+COPY --chown=1001:0 status/dropins/*.war /config/dropins/
+
+# Build a Docker images:
+# docker build -t "liberty:latest" -f DockerfileHub .
+#
+# After run the image
+# docker run -d -p 9080:9080 -p 9443:9443 liberty:latest

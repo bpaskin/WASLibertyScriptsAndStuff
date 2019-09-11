@@ -1,0 +1,60 @@
+# Download the operating system, install and configure
+# from local files
+FROM fedora:latest AS initial
+
+# Arguments to be used to copy and unpack
+ENV LIBERTY=wlp-nd-all-19.0.0.8.jar \
+    JAVA=ibm-java-sdk-8.0-5.40-linux-x86_64.tgz \
+    JAVA_HOME=/opt/ibm/java/ibm-java-x86_64-80 \
+    WLP_OUTPUT_DIR=/output
+
+# Copy java and Liberty over to container and extract to the proper location
+# and create defaultServer and other necessary directories
+COPY ${JAVA} ${LIBERTY} /tmp/ 
+
+RUN mkdir /opt/ibm \
+   && mkdir /opt/ibm/java \
+   && gzip -d /tmp/${JAVA} \
+   && tar -xf /tmp/*.tar -C /opt/ibm/java \
+   && rm /tmp/*.tar \
+   && $JAVA_HOME/jre/bin/java -jar /tmp/${LIBERTY} --acceptLicense /opt/ibm \
+   && rm /tmp/${LIBERTY} \
+   && /opt/ibm/wlp/bin/server create \
+   && rm -rf ${WLP_OUTPUT_DIR}/.classCache 
+
+# Copy the files from the local App Server to Docker and 
+# make it a run as a user
+COPY --chown=1001:0 status/server.xml /opt/ibm/wlp/usr/servers/defaultServer
+COPY --chown=1001:0 status/dropins/*.war /opt/ibm/wlp/usr/servers/defaultServer/dropins/
+
+# Multi stage build
+FROM fedora:latest 
+
+ENV JAVA_HOME=/opt/ibm/java/ibm-java-x86_64-80 \
+    PATH=$JAVA_HOME/jre/bin:/opt/ibm/wlp/bin:$PATH \
+    LOG_DIR=/logs \
+    WLP_OUTPUT_DIR=/output
+
+RUN mkdir /opt/ibm \
+   && mkdir /logs \
+   && mkdir /output \
+   && chown -R 1001:0 /logs \
+   && chown -R 1001:0 /output
+
+COPY --from=initial --chown=1001:0 /opt/ibm /opt/ibm
+
+# switch over to run as the default user
+USER 1001
+
+# Copy the files from the local App Server to Docker and 
+#export the necessary portsa
+EXPOSE 9080 9443
+
+# how to start Liberty when the container starts
+CMD ["/opt/ibm/wlp/bin/server", "run", "defaultServer"]
+
+# Build a Docker images:
+# docker build -t "liberty/fedora:latest" -f DockerfileFedora .
+#
+# After run the image
+# docker run -d -p 9080:9080 -p 9443:9443 liberty/fedora:latest
