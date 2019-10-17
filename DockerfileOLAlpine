@@ -1,0 +1,36 @@
+FROM adoptopenjdk/openjdk8:alpine-slim
+
+ARG LIBERTY_VERSION=19.0.0.10 
+ARG LIBERTY_DOWNLOAD_URL=https://repo1.maven.org/maven2/io/openliberty/openliberty-javaee8/$LIBERTY_VERSION/openliberty-javaee8-$LIBERTY_VERSION.zip
+
+ENV PATH=/opt/ol/wlp/bin:/opt/ol/docker/:/opt/ol/helpers/build:$PATH \
+    LOG_DIR=/logs \
+    WLP_OUTPUT_DIR=/opt/ol/wlp/output \
+    WLP_SKIP_MAXPERMSIZE=true
+
+WORKDIR /opt/ol
+
+EXPOSE 9080 9443
+
+CMD ["/opt/ol/wlp/bin/server", "run", "defaultServer"]
+
+RUN wget -q $LIBERTY_DOWNLOAD_URL -U UA-Open-Liberty-Docker -O /opt/ol/wlp.zip \
+    && unzip wlp.zip \
+    && rm wlp.zip \
+    && /opt/ol/wlp/bin/server create \
+    && rm -Rf $WLP_OUTPUT_DIR/.classCache $WLP_OUTPUT_DIR/workarea \
+    && ln -s $WLP_OUTPUT_DIR /output \
+    && ln -s /opt/ol/wlp/usr/servers/defaultServer /config \
+    && mkdir -p /config/configDropins/defaults \
+    && mkdir -p /config/configDropins/overrides \
+    && echo "<server description=\"Default Server\"><httpEndpoint id=\"defaultHttpEndpoint\" host=\"*\" /></server>" > /config/configDropins/defaults/open-default-port.xml
+ 
+# Copy the apps and configs for OL   
+# COPY apps /config/dropins
+# COPY config.xml /config/configDropins/defaults
+
+# build a docker image
+# docker build -t "ol/alpine:190010" -f DockerfileOLAlpine .
+
+# Run in a container
+# docker run -d -p 9080:9080 -p 9443:9443 "ol/alpine:190010"
