@@ -1,0 +1,11 @@
+<server>
+    <variable name="MQ.RAR" value="${server.config.dir}/resources/wmq.jmsra.rar"/>
+    <variable name="AMQ.RAR" value="${server.config.dir}/resources/activemq-rar-5.16.2.rar"/>
+    <variable name="IN.Q" value="NAME_OF_INPUT_Q"/>
+    <variable name="OUT.Q" value="NAME_OF_OUTPUT_Q"/>
+    <variable name="MQ.CHANNEL" value="CHANNEL.TO.CHANNEL"/>
+    <variable name="MQ.QMGR" value="QMGR_NAME"/>
+    <variable name="MQ.HOSTNAME" value="HOSTNAME"/>
+    <variable name="MQ.PORT" value="LISTENER_PORT"/>
+    <variable name="AMQ.CONNECTION" value="tcp://HOSTNAME:PORT"/>
+</server>

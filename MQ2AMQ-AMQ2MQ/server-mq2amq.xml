@@ -1,0 +1,34 @@
+<server description="new server">
+
+    <include optional="true" location="definitions.xml"/>
+ 
+    <!-- Enable features -->
+    <featureManager>
+	<feature>wmqJmsClient-2.0</feature>
+    	<feature>mdb-3.2</feature>
+    	<feature>servlet-4.0</feature>
+    </featureManager>
+    
+    <!--  MQ  -->
+    <variable name="wmqJmsClient.rar.location" value="${MQ.RAR}"/>
+    
+    <jmsQueue id="IN.Q" jndiName="jms/IN.Q">
+    	<properties.wmqJms baseQueueManagerName="${MQ.QMGR}" baseQueueName="${IN.Q}"/>
+    </jmsQueue>
+ 
+     <jmsActivationSpec id="JMSMQ/GetMessages">
+    	<properties.wmqJms channel="${MQ.CHANNEL}" destinationRef="IN.Q" destinationType="javax.jms.Queue" hostName="${MQ.HOSTNAME}" port="${MQ.PORT}" queueManager="${MQ.QMGR}" transportType="CLIENT" maxPoolDepth="25"/>
+    </jmsActivationSpec>
+  
+  	<!--  Active MQ -->  
+    <resourceAdapter id="activemq" location="${AMQ.RAR}"/>
+        <jmsConnectionFactory jndiName="jms/OUT.CF">
+    	<properties.activemq ServerUrl="${AMQ.CONNECTION}"/>
+    </jmsConnectionFactory>
+    
+    <jmsQueue jndiName="jms/OUT.Q">
+        <properties.activemq PhysicalName="${OUT.Q}"/>
+    </jmsQueue>
+   
+    <webApplication location="JMSMQ.war" />
+</server>
