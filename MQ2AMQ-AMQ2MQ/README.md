@@ -1,4 +1,4 @@
-### MQ to ActiveMQ and ActiveMQ to NQ ###
+### MQ to ActiveMQ and ActiveMQ to MQ ###
 
 This is a sample how to use Liberty to transfer messages between two different messaging platforms using JMS.  ActiveMQ only supports JMS 1.1, so some extra code needed to be added.
 
