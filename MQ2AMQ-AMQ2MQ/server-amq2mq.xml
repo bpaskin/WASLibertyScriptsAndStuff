@@ -4,20 +4,20 @@
 
     <!-- Enable features -->
     <featureManager>
-	<feature>wmqJmsClient-2.0</feature>
+	<feature>jms-2.0</feature>
     	<feature>mdb-3.2</feature>
         <feature>servlet-4.0</feature>
     </featureManager>
     
     <!--  MQ  -->
-    <variable name="wmqJmsClient.rar.location" value="${MQ.RAR}"/>
+    <resourceAdapter id="mq" location="${MQ.RAR}"/>
     
     <jmsQueueConnectionFactory jndiName="jms/OUT.CF">
-    	<properties.wmqJms channel="${MQ.CHANNEL}" hostName="${MQ.HOSTNAME}" queueManager="${MQ.QMGR}" port="${MQ.PORT}"/>
+    	<properties.mq channel="${MQ.CHANNEL}" hostName="${MQ.HOSTNAME}" queueManager="${MQ.QMGR}" port="${MQ.PORT}"/>
     </jmsQueueConnectionFactory>
 
     <jmsQueue id="OUT.Q" jndiName="jms/OUT.Q">
-    	<properties.wmqJms baseQueueManagerName="${MQ.QMGR}" baseQueueName="${OUT.Q}"/>
+    	<properties.mq baseQueueManagerName="${MQ.QMGR}" baseQueueName="${OUT.Q}"/>
     </jmsQueue>
   
     <!--  Active MQ -->  

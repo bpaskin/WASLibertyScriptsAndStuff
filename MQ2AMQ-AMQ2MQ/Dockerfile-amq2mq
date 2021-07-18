@@ -1,4 +1,4 @@
-FROM websphere-liberty:full-java11-openj9
+FROM open-liberty:full-java11-openj9
 
 USER 0
 RUN apt-get update && apt-get -y upgrade
