@@ -1,0 +1,14 @@
+# OpenLiberty operator must already be installed
+# applicationImage - ie. quay.io/name/amq2mq
+#
+apiVersion: openliberty.io/v1beta1
+kind: OpenLibertyApplication
+metadata:
+  name: amq2mq
+  namespace: YOUR_NAMESPACE
+spec:
+  expose: false
+  applicationImage: YOUR_IMAGE_LOCATION
+  pullPolicy: Always
+  replicas: 1
+  applicationName: amq2mq
