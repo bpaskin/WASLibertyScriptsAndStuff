@@ -15,3 +15,13 @@ To build a Docker image for AMQ to MQ:
 
 To run:
 `docker run -d --name amq2mq amq2mq:latest`
+
+___________________________
+### Working with OpenShift ###
+
+To deploy to an OpenShift environment. 
+1. Install the OpenLiberty Operator.  This can be done through the [Operator Hub](https://operatorhub.io/operator/open-liberty) or by following the [manual install steps](https://github.com/OpenLiberty/open-liberty-operator/tree/master/deploy/releases/0.7.1).  
+2. Upload the images to a repository, like [Quay.io](https://quay.io).  
+3. Use the [amq2mq.yaml](https://github.com/bpaskin/WASLibertyScriptsAndStuff/blob/master/MQ2AMQ-AMQ2MQ/amq2mq.yaml) or [mq2amq.yaml](https://github.com/bpaskin/WASLibertyScriptsAndStuff/blob/master/MQ2AMQ-AMQ2MQ/mq2amq.yaml) as a template and update the `namespace` and `applicationImage`, which is the location of the image to pull.  Run the command `oc apply -f mq2amq.yaml` or `oc apply -f amq2mq.yaml`
+
+The logs of the pod that is created should show that the OpenLiberty server is started and connected to the both systems.
