@@ -1,6 +1,6 @@
 # Using non Java based MQ Security Exits with OpenLiberty/Liberty
 
-[IBM MQ](https://www.ibm.com/products/mq) supports Channel security exits, plug points, that expand the security capabilities.  The exits can be written in Java, C, C++, COBOL, RPG, or Assembly, depending on the platform.  OpenLiberty/Liberty runs on Java and can execute security exits that are written in Java without any further installation of software.  However, if another language is needed, then the MQ Client Runtime is required.
+[IBM MQ](https://www.ibm.com/products/mq) supports Channel security exits, plug points, that expand the security capabilities.  The exits can be written using a [supported language](https://www.ibm.com/docs/en/ibm-mq/9.2?topic=reference-channel-exit-calls-data-structures) on a supported platform.  OpenLiberty/Liberty runs on Java and can execute security exits that are written in Java without any further installation of software.  However, if another language is needed, then the MQ Client Runtime is required.
 
 I will be using Linux as an example and I have successfully used this technique in a container. The MQ Clients (MQC) can be downloaded from [IBM Fix Central](https://www.ibm.com/support/fixcentral/).  For the Product select `IBM MQ`, version `9.2.3` (at the time of the writing), and desired platform.  On the next page just browse for fixes.  The MQC is named similiar to `9.2.3.0-IBM-MQC-<platform>.tar.gz`.  Download that file.
 
