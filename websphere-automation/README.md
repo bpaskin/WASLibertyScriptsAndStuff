@@ -81,7 +81,7 @@ update the `server.xml`:
    <feature>usageMetering-1.0</feature>
 </featureManager>
 
-   <usageMetering url="${url}"  apiKey="${apiKey}" sslRef="${sslRed}"/>
+   <usageMetering url="${url}" apiKey="${apiKey}" sslRef="${sslRef}"/>
 ```
 
 Download the certificate to be trusted:
