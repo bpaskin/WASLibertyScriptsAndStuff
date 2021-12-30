@@ -1,0 +1,41 @@
+# Pull secret must have entitlement key
+# oc create secret docker-registry ibm-entitlement-key --namespace=websphere-automation --docker-server=cp.icr.io --docker-username=cp --docker-password=ENTITLEMENT-KEY
+#
+# create instance of WebSphere Automation
+apiVersion: automation.websphere.ibm.com/v1
+kind: WebSphereAutomation
+metadata:
+  name: wsa
+  namespace: websphere-automation
+spec:
+  license:
+    accept: true
+  pullPolicy: IfNotPresent
+  pullSecret: ibm-entitlement-key
+---
+# create WebSphere Automation Security check
+apiVersion: automation.websphere.ibm.com/v1
+kind: WebSphereSecure
+metadata:
+  name: wsa-secure
+  namespace: websphere-automation
+spec:
+  license:
+    accept: true
+  pullSecret: ibm-entitlement-key
+  pullPolicy: IfNotPresent
+  replicas: 1
+---
+# create WebSphere Automation Health Check
+apiVersion: automation.websphere.ibm.com/v1
+kind: WebSphereHealth
+metadata:
+  name: wsa-health
+  namespace: websphere-automation
+spec:
+  license:
+    accept: true
+  pullSecret: ibm-entitlement-key
+  pullPolicy: IfNotPresent
+  replicas: 1
+
