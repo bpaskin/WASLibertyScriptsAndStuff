@@ -36,3 +36,62 @@ Install the instances of WebSphere Automation
 
 It may take awahile for everything to be installed.
 
+---
+
+Configure traditional WebSphere Application Server
+
+If using a Deployment Manager then the following should be done on the DMGR node.  Otherwise, it goes on the App Server node.  In addition, this assumes that the server is using the default configuration for the SSL Configuration.  This can be changed by pointing the last line to the proper SSL Reference.
+
+```
+echo "url=https://`oc get route cpd -n websphere-automation -o jsonpath='{.spec.host}'/websphereauto/meteringapi`" > was-usage-metering.properties
+echo "apiKey=`oc -n websphere-automation get secret wsa-secure-metering-apis-encrypted-tokens -o jsonpath='{.data.wsa-secure-metering-apis-sa}' | base64 -d`" >> was-usage-metering.properties
+echo "sslRef=CellDefaultSSLSettings" >> was-usage-metering.properties
+```
+
+This file should be copied to the `profile_home/config/cells/cell_name` directory
+
+Download the certificate:
+```
+echo "`oc get secret external-tls-secret -n websphere-automation -o jsonpath='{.data.cert\.crt}' | base64 -d`" > cert.pem
+````
+
+Place it in the truststore:
+```
+keytool -import -trustcacerts -file cert.pem -keystore PROFILE_NAME/config/cells/CELL_NAME/trust.p12 -storetype PKCS12 -storepass WebAS -noprompt
+```
+
+Syncrhonize the nodes and check the `SystemOut.log` of the servers to make sure it is connecting to the metering endpoint.
+
+---
+
+Configure Liberty Server
+
+The Liberty `bootstrap.properties` file needs to be updated with the necessary information.
+
+```
+echo "url=https://`oc get route cpd -n websphere-automation -o jsonpath='{.spec.host}'/websphereauto/meteringapi`" >> bootstrap.properties
+echo "apiKey=`oc -n websphere-automation get secret wsa-secure-metering-apis-encrypted-tokens -o jsonpath='{.data.wsa-secure-metering-apis-sa}' | base64 -d`" >> bootstrap.properties
+echo "sslRef=defaultSSLConfig" >> bootstrap.properties
+```
+
+update the `server.xml`:
+
+```
+<featureManager>
+   <feature>usageMetering-1.0</feature>
+</featureManager>
+
+   <usageMetering url="${url}"  apiKey="${apiKey}" sslRef="${sslRed}"/>
+```
+
+Download the certificate to be trusted:
+```
+echo "`oc get secret external-tls-secret -n websphere-automation -o jsonpath='{.data.cert\.crt}' | base64 -d`" > cert.pem
+````
+
+Add the certificate to the truststore of the server, example:
+```
+keytool -import -trustcacerts -file cert.pem -keystore SERVER_NAME/resources/security/trust.p12 -storetype PKCS12 -storepass WebAS -noprompt
+```
+
+Check the logs to make sure it is communicating with the metering endpoint.
