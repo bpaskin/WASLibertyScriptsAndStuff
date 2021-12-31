@@ -69,9 +69,9 @@ Configure Liberty Server
 The Liberty `bootstrap.properties` file needs to be updated with the necessary information.
 
 ```
-echo "url=https://`oc get route cpd -n websphere-automation -o jsonpath='{.spec.host}'/websphereauto/meteringapi`" >> bootstrap.properties
-echo "apiKey=`oc -n websphere-automation get secret wsa-secure-metering-apis-encrypted-tokens -o jsonpath='{.data.wsa-secure-metering-apis-sa}' | base64 -d`" >> bootstrap.properties
-echo "sslRef=defaultSSLConfig" >> bootstrap.properties
+echo "URL=https://`oc get route cpd -n websphere-automation -o jsonpath='{.spec.host}'/websphereauto/meteringapi`" >> bootstrap.properties
+echo "APIKEY=`oc -n websphere-automation get secret wsa-secure-metering-apis-encrypted-tokens -o jsonpath='{.data.wsa-secure-metering-apis-sa}' | base64 -d`" >> bootstrap.properties
+echo "SSLREF=defaultSSLConfig" >> bootstrap.properties
 ```
 
 update the `server.xml`:
@@ -81,7 +81,7 @@ update the `server.xml`:
    <feature>usageMetering-1.0</feature>
 </featureManager>
 
-   <usageMetering url="${url}" apiKey="${apiKey}" sslRef="${sslRef}"/>
+   <usageMetering url="${URL}" apiKey="${APIKEY}" sslRef="${SSLREF}"/>
 ```
 
 Download the certificate to be trusted:
