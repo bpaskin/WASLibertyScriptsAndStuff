@@ -1,0 +1,19 @@
+# Must run this BEFORE applying this to file
+
+# Must enter entitlement key into namespace.  Go to : go to https://myibm.ibm.com/products-services/containerlibrary and get key
+# to add it to the namespace/project: oc create secret docker-registry ibm-entitlement-key --docker-server=cp.icr.io --docker-username=cp --docker-password=<ENTITLEMENT KEY>
+#
+# oc adm policy add-scc-to-user transadv-scc system:serviceaccount:trans-advisor:ta-operator
+#
+# Install Operator
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: ta-operator
+  namespace: trans-advisor
+spec:
+  channel: v3.0
+  name: ibm-transformation-advisor
+  source: ibm-operator-catalog
+  sourceNamespace: openshift-marketplace
+
