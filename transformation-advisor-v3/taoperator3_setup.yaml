@@ -151,6 +151,7 @@ roleRef:
   name: ta-operator-sa
   apiGroup: rbac.authorization.k8s.io
 ---
+# Set Security Constraints
 allowHostDirVolumePlugin: false
 allowHostIPC: false
 allowHostNetwork: false
