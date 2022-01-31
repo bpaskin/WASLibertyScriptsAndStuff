@@ -3,7 +3,7 @@
 # This script will use OWASP's Depency Check that will check all java based archives (.ear, .war, .jar, etc) in a directory and create an HTML report.
 # Internet connection is required as the version will be checked and updated, if necessary.  In addition, the depency check tool downloads CVE's to its databasse.
 #
-# Requires: bash, sed, curl, unzip
+# Requires: bash, sed, curl, unzip, java
 #
 # Usage: security-check.sh path_to_files
 #
