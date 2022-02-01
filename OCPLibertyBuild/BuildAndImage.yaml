@@ -1,0 +1,57 @@
+# Source image to take the latest version of Open Liberty
+# and placee it in ImageStreams
+kind: ImageStream
+apiVersion: image.openshift.io/v1
+metadata:
+  name: open-liberty
+spec:
+  lookupPolicy:
+    local: false
+  tags:
+    - name: full-java8-ibmjava-ubi
+      annotations: null
+      from:
+        kind: DockerImage
+        name: 'icr.io/appcafe/open-liberty:full-java8-ibmjava-ubi'
+      generation: 1
+      importPolicy: {}
+      referencePolicy:
+        type: Source
+---
+# Create a destination ImageStream tag that will be updated by build
+kind: ImageStream
+apiVersion: image.openshift.io/v1
+metadata:
+  name: open-liberty-sample
+spec:
+  lookupPolicy:
+    local: false
+---
+# Create the build configuration to pull from github and build bassed
+# on Dockerfile and then replacee ImageStream
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata:
+  name: open-liberty-sample
+  labels:
+    app: open-liberty-sample
+spec:
+  source:
+    type: Git
+    git:
+      uri: https://github.com/bpaskin/WASLibertyScriptsAndStuff.git
+    contextDir: OCPLibertyBuild
+  strategy:
+    type: Docker                      
+    dockerStrategy:
+      dockerfilePath: Dockerfile
+      from:
+        kind: ImageStreamTag       
+        namespace: liberty
+        name: open-liberty:full-java8-ibmjava-ubi
+  output:
+    to:
+      kind: ImageStreamTag
+      name: open-liberty-sample:latest
+  triggers:
+  - type: ImageChange              
