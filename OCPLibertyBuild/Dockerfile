@@ -8,3 +8,4 @@ COPY --chown=1001:0  server.xml /config/
 COPY --chown=1001:0  key.p12 /config/resources/security/
 COPY --chown=1001:0  keystore.xml /config/configDropins/defaults/keystore.xml
 COPY --chown=1001:0  DefaultApplication.ear /config/dropins
+ 
