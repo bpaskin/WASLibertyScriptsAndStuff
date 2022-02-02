@@ -32,3 +32,6 @@ A `Build` should be started after the `BuildConfig`.  The logs in the `Build` ca
 Create a `Seecret` to place the HTTP and HTTPs ports.  This will be mounted by the OpenLiberty App under the `/config/variables` directory and read in as variables for use with the `server.xml` file.  Likewise, a `ConfigMap` with the `jvm.options` will be mounted under the `/config` directory and used when the OpenLiberty server starts.  The OpenLiberty server will take the new image from the `ImageStream` that was built and deploy it using the HTTPS port 9443 as passsthrough for the `Route` and `Service`.  
 
 1. execute the command `oc apply -f openLibertyApp.yaml`.
+---
+
+Test by getting the `Route` by executing the `oc get route openliberty-app-sample`.  Take note of the `HOST/PORT` column.  copy this information and in a browser type `https://HOST_YOU_COPIED:443/snoop`.  After browser warning about the self signed certificate, this shoud bring up the snoop application.
