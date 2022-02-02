@@ -34,4 +34,4 @@ Create a `Seecret` to place the HTTP and HTTPs ports.  This will be mounted by t
 1. execute the command `oc apply -f openLibertyApp.yaml`.
 ---
 
-Test by getting the `Route` by executing the `oc get route openliberty-app-sample`.  Take note of the `HOST/PORT` column.  copy this information and in a browser type `https://HOST_YOU_COPIED:443/snoop`.  After browser warning about the self signed certificate, this shoud bring up the snoop application.
+Test by getting the `Route` by executing the `oc get route openliberty-app-sample`.  Take note of the `HOST/PORT` column.  copy this information and in a browser type `https://HOST_YOU_COPIED/snoop`.  After browser warning about the self signed certificate, this shoud bring up the snoop application.
