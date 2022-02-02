@@ -1,0 +1,37 @@
+# Add a Secret that will be pulled into OL as a variable
+apiVersion: v1
+kind: Secret
+metadata:
+   name: open-liberty-vars
+stringData:
+   httpPort: 9080
+   httpsPort: 9443
+--- 
+# create the application the application using the OL Operator
+# Will take image from local ImageStream
+apiVersion: apps.openliberty.io/v1beta2
+kind: OpenLibertyApplication
+metadata:
+  name: openliberty-app-sample
+spec:
+  expose: true
+  applicationImage: >-
+    image-registry.openshift-image-registry.svc:5000/liberty/open-liberty-sample:latest
+  volumeMounts:
+  - mountPath: /config/variables/
+    name: variables
+    readOnly: false
+  volumes:
+  - name: variables
+    secret:
+      secretName: open-liberty-vars
+  autoscaling:
+    maxReplicas: 3
+    minReplicas: 1
+    targetCPUUtilizationPercentage: 50
+  applicationName: openliberty-app-sample
+  pullPolicy: IfNotPresent
+  route:
+    termination: passthrough
+   service:
+    port: 9443
