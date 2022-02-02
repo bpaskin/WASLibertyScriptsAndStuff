@@ -20,3 +20,5 @@ The `openLibertyOperatorInstall.yaml` file will create a new project/namespace c
 3. change to the new project-namespace using the command `oc project open-liberty`.
 
 ### Create ImageStreams, BuildConfig, and Build a new image ###
+
+The `BuildAndImage.yaml` will save a base image of the latest version of version of Open Liberty to the `ImageStreams` and call it `open-lliberty:full-java8-ibmjava-ubi`.  Then a new blank `ImageStream` will be created for the output of the build.  That will be called `open-liberty-sample:latest`.  Finally a `BuildConfig` will be created that will download the files from this github repository and build a container image using the supplied Dockerfile and files.  
