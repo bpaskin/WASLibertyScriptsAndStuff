@@ -7,6 +7,16 @@ stringData:
    httpPort: "9080"
    httpsPort: "9443"
 --- 
+# create ConfigMap for the jvm.options and have them mounted
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: open-liberty-jvmoptions
+data:
+  jvm.options: |
+    -DENV=DEVELOPMENT
+    -Dhello=world
+---
 # create the application the application using the OL Operator
 # Will take image from local ImageStream
 apiVersion: apps.openliberty.io/v1beta2
@@ -20,11 +30,18 @@ spec:
   volumeMounts:
   - mountPath: /config/variables/
     name: variables
-    readOnly: false
+    readOnly: true
+  - mountPath: /config/jvm.options
+    subPath: jvm.options
+    name: jvm-options
+    readOnly: true
   volumes:
   - name: variables
     secret:
       secretName: open-liberty-vars
+  - name: jvm-options
+    configMap:
+      name: open-liberty-jvmoptions
   autoscaling:
     maxReplicas: 3
     minReplicas: 1
