@@ -4,8 +4,8 @@ kind: Secret
 metadata:
    name: open-liberty-vars
 stringData:
-   httpPort: 9080
-   httpsPort: 9443
+   httpPort: "9080"
+   httpsPort: "9443"
 --- 
 # create the application the application using the OL Operator
 # Will take image from local ImageStream
