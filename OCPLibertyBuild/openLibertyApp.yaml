@@ -33,5 +33,5 @@ spec:
   pullPolicy: IfNotPresent
   route:
     termination: passthrough
-   service:
+  service:
     port: 9443
