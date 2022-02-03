@@ -27,6 +27,14 @@ spec:
   lookupPolicy:
     local: false
 ---
+# create a secret for the webhook for git
+kind: Secret
+apiVersion: v1
+metadata:
+   name: open-liberty-sample-github
+data:
+   WebHookSecretKey: QWx0YXJzLTBmLU1hZG5lMzMK
+---
 # Create the build configuration to pull from github and build bassed
 # on Dockerfile and then replacee ImageStream
 apiVersion: build.openshift.io/v1
@@ -54,4 +62,9 @@ spec:
       kind: ImageStreamTag
       name: open-liberty-sample:latest
   triggers:
-  - type: ImageChange              
+  - type: ImageChange
+  - type: GitHub
+    github:
+      secretReference:
+        name: open-liberty-sample-github
+
