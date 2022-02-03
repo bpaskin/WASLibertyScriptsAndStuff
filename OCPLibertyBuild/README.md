@@ -23,7 +23,7 @@ The `openLibertyOperatorInstall.yaml` file will create a new project/namespace c
 
 The `BuildAndImage.yaml` will save a base image of the latest version of version of Open Liberty to the `ImageStreams` and call it `open-liberty:full-java8-ibmjava-ubi`.  Then a new blank `ImageStream` will be created for the output of the build.  That will be called `open-liberty-sample:latest`.  Finally a `BuildConfig` will be created that will download the files from this github repository and build a container image using the supplied `Dockerfile` and files.  The new image will be stored in the blank image we created `open-liberty-sample:latest`.
 
-A `Build` should be started after the `BuildConfig`.  The logs in the `Build` can be viewed on status and step.  The `BuildConfig` is set to only creat a `Builld` when the base `ImageStream` is changed.  In a real environment a webhook trigger would be setup, as well.
+A `Build` should be started after the `BuildConfig`.  The logs in the `Build` can be viewed on status and step.  The `BuildConfig` is set to only creat a `Builld` when the base `ImageStream` is changed.  The webhook is added to trigger events when setup in GitHub to push change events using the `Secret`.
 
 1. execute the script using the command `oc apply -f BuildAndImage.yaml`.
 ---
