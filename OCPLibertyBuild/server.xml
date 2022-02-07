@@ -8,5 +8,7 @@
 
     <ssl id="defaultSSLConfig" keyStoreRef="defaultKeyStore" trustStoreRef="defaultKeyStore" />
     <keyStore id="defaultKeyStore" password="passw0rd" location="${server.config.dir}/resources/security/key.p12" />
+    
+    <quickStartSecurity userName="admin" userPassword="admin" />
 </server>
  
