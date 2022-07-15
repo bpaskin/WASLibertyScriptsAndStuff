@@ -1,0 +1,37 @@
+---
+# Create a new namespace 
+apiVersion: project.openshift.io/v1
+description: "WebSphere Liberty Operator"
+displayName: was-liberty
+kind: ProjectRequest
+metadata:
+    name: was-liberty
+---
+# Add the IBM Container Registry Catalog
+apiVersion: operators.coreos.com/v1alpha1
+kind: CatalogSource
+metadata:
+  name: ibm-operator-catalog
+  namespace: openshift-marketplace
+spec:
+  displayName: ibm-operator-catalog 
+  publisher: IBM Content
+  sourceType: grpc
+  image: icr.io/cpopen/ibm-operator-catalog
+  updateStrategy:
+    registryPoll:
+      interval: 45m
+---
+# Add the operator to the was-liberty namespace
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: ibm-websphere-liberty
+  namespace: was-liberty
+spec:
+  channel: v1.0
+  installPlanApproval: Automatic
+  name: ibm-websphere-liberty
+  source: ibm-operator-catalog
+  sourceNamespace: openshift-marketplace
+...
