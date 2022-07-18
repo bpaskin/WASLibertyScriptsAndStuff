@@ -12,7 +12,7 @@
     
 # Create a new namespace 
 apiVersion: project.openshift.io/v1
-description: "WebSphere Liberty Operator"
+description: "WebSphere Liberty"
 displayName: was-liberty
 kind: ProjectRequest
 metadata:
