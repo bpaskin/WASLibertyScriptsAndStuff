@@ -1,4 +1,15 @@
 ---
+# The IBM Entitlement Key needs to be added a Secret 
+#
+# To get your IBM Entitlement Key:
+# https://myibm.ibm.com/products-services/containerlibrary
+#
+# oc create secret docker-registry ibm-entitlement-key \
+#     --docker-username=cp \
+#     --docker-password=<entitlement-key> \
+#     --docker-server=cp.icr.io \
+#     --namespace=was-liberty
+    
 # Create a new namespace 
 apiVersion: project.openshift.io/v1
 description: "WebSphere Liberty Operator"
