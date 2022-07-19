@@ -18,6 +18,22 @@ kind: ProjectRequest
 metadata:
     name: was-liberty
 ---
+# Add Operator Group
+apiVersion: operators.coreos.com/v1alpha2
+kind: OperatorGroup
+metadata:
+  annotations:
+    olm.providedAPIs: >- 
+       WebSphereLibertyApplication.v1.liberty.websphere.ibm.com,WebSphereLibertyDump.v1.liberty.websphere.ibm.com,WebSphereLibertyTrace.v1.liberty.websphere.ibm.com
+  name: was-liberty-opgroup
+  namespace: was-liberty
+spec:
+  targetNamespaces:
+    - was-liberty
+status:
+  namespaces:
+    - was-liberty
+---
 # Add the IBM Container Registry Catalog
 apiVersion: operators.coreos.com/v1alpha1
 kind: CatalogSource
