@@ -1,6 +1,8 @@
 # Pull secret must have entitlement key
 # oc create secret docker-registry ibm-entitlement-key --namespace=websphere-automation --docker-server=cp.icr.io --docker-username=cp --docker-password=ENTITLEMENT-KEY
 #
+# Add credentials for fix central
+# oc create secret generic wsa-secure-fixcentral-creds --from-literal=user=<fixcentral_id> --from-literal=<fixcentral_pw>
 # create instance of WebSphere Automation
 apiVersion: automation.websphere.ibm.com/v1
 kind: WebSphereAutomation
