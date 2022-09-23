@@ -31,6 +31,11 @@ Wait until all the operators are installed.
 Next apply the [IBM Entitlement Key](https://myibm.ibm.com/products-services/containerlibrary) to the Secrets of the `websphere-automation` namespace.  Replace the `ENTITLEMENT-KEY` with the entitlment key from the entitlement key website. </br>
 `oc create secret docker-registry ibm-entitlement-key --namespace=websphere-automation --docker-server=cp.icr.io --docker-username=cp --docker-password=ENTITLEMENT-KEY`
 
+The Fix Central userid and password must be saved in a Secret if fixed are to be prepared from WSA
+```
+oc create secret generic wsa-secure-fixcentral-creds --from-literal=user=<fixcentral_id> --from-literal=password=<fixcentral_pw>
+```
+
 Install the instances of WebSphere Automation
 `oc apply -f websphere-automation-instance.yaml`
 
