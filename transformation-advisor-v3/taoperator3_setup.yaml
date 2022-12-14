@@ -6,194 +6,126 @@ metadata:
   labels:
     name: trans-advisor
 ---
-# Create Service Account 
 apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: ta-operator-sa
   namespace: trans-advisor
-  labels:
-    release: "operator"
-    app.kubernetes.io/name: ta-operator
-    app.kubernetes.io/instance: ta-instance
-    app.kubernetes.io/managed-by: helm
 ---
-# Create Operator Group
 apiVersion: operators.coreos.com/v1
 kind: OperatorGroup
 metadata:
   name: ta-ownnamespace-operator-group
   namespace: trans-advisor
 spec:
-  serviceAccountName: ta-operator-sa
   targetNamespaces:
     - trans-advisor
 ---
-# Set Roles and Permissions
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  creationTimestamp: null
-  name: ta-operator-sa
+  name: ibm-transformation-advisor
   namespace: trans-advisor
-  labels:
-    release: "operator"
-    app.kubernetes.io/name: ta-operator
-    app.kubernetes.io/instance: ta-instance
-    app.kubernetes.io/managed-by: helm
 rules:
-- apiGroups: ["networking.k8s.io"]
-  resources: ["networkpolicies"]
-  verbs: ["get", "list", "watch", "create", "delete", "patch"]
-- apiGroups: ["console.openshift.io"]
-  resources: ["consoleyamlsamples"]
-  verbs: ["create", "patch"]
-- apiGroups: ["config.openshift.io"]
-  resources: ["ingresses", "infrastructures", "dnses"]
-  verbs: ["get"]
-- apiGroups: ["oauth.openshift.io"]
-  resources: ["oauthclients", "oauthclients/finalizers"]
-  verbs: ["get", "list", "create", "delete"]
-- apiGroups: ["operators.coreos.com"]
-  resources: ["clusterserviceversions"]
-  verbs: ["get", "list", "watch", "create", "delete", "patch"]
-- apiGroups: ["apiextensions.k8s.io"]
-  resources: ["customresourcedefinitions", "customresourcedefinitions/finalizers"]
-  verbs: ["get", "list", "watch", "create", "update", "delete", "patch"]
-- apiGroups: [""]
-  resources: ["namespaces"]
-  verbs: ["get"]
-- apiGroups: ["batch"]
-  resources: ["jobs"]
-  verbs: ["get", "list", "watch", "create", "update", "delete", "patch"]
-- apiGroups: [""]
-  resources: ["configmaps", "persistentvolumeclaims", "pods", "services", "secrets", "serviceaccounts"]
-  verbs: ["*"]
-- apiGroups: ["apps"]
-  resources: ["deployments", "statefulsets"]
-  verbs: ["get", "list", "watch", "create", "update", "delete", "patch"]
-- apiGroups: ["monitoring.coreos.com"]
-  resources: ["servicemonitors"]
-  verbs: ["get", "create"]
-- apiGroups: ["apps"]
-  resourceNames: ["ta-operator"]
-  resources: ["deployments/finalizers", "statefulsets/finalizers"]
-  verbs: ["update"]
-- apiGroups: [""]
-  resources: ["pods"]
-  verbs: ["get"]
-- apiGroups: ["apps"]
-  resources: ["replicasets"]
-  verbs: ["get", "list", "watch", "create", "update", "delete", "patch"]
-- apiGroups: ["ta.ibm.com"]
-  resources: ["*"]
-  verbs: ["get", "list", "watch", "create", "update", "delete", "patch"]
-- apiGroups: ["route.openshift.io"]
-  resources: ["routes", "routes/custom-host"]
-  verbs: ["get", "list", "watch", "create", "update", "delete", "patch"]
-- apiGroups: ["rbac.authorization.k8s.io"]
-  resources: ["clusterrolebindings", "clusterroles", "clusterroles/finalizers", "roles", "rolebindings", "roles/finalizers", "rolebindings/finalizers"]
-  verbs: ["*"]
+  - apiGroups: ["networking.k8s.io"]
+    resources: ["networkpolicies"]
+    verbs: ["get", "list", "watch", "create", "delete", "patch"]
+  - apiGroups: ["config.openshift.io"]
+    resources: ["ingresses", "infrastructures", "dnses"]
+    verbs: ["get"]
+  - apiGroups: ["oauth.openshift.io"]
+    resources: ["oauthclients", "oauthclients/finalizers"]
+    verbs: ["get", "list", "create", "delete"]
+  - apiGroups: ["operators.coreos.com"]
+    resources: ["clusterserviceversions"]
+    verbs: ["get", "list", "watch", "create", "delete", "patch"]
+  - apiGroups: ["apiextensions.k8s.io"]
+    resources: ["customresourcedefinitions", "customresourcedefinitions/finalizers"]
+    verbs: ["get", "list", "watch", "create", "update", "delete", "patch"]
+  - apiGroups: [""]
+    resources: ["namespaces"]
+    verbs: ["get"]
+  - apiGroups: ["batch"]
+    resources: ["jobs"]
+    verbs: ["get", "list", "watch", "create", "update", "delete", "patch"]
+  - apiGroups: [""]
+    resources: ["configmaps", "persistentvolumeclaims", "pods", "services", "secrets", "serviceaccounts", "events"]
+    verbs: ["*"]
+  - apiGroups: ["apps"]
+    resources: ["deployments", "statefulsets"]
+    verbs: ["get", "list", "watch", "create", "update", "delete", "patch"]
+  - apiGroups: ["monitoring.coreos.com"]
+    resources: ["servicemonitors"]
+    verbs: ["get", "create"]
+  - apiGroups: ["apps"]
+    resourceNames: ["ta-operator"]
+    resources: ["deployments/finalizers", "statefulsets/finalizers"]
+    verbs: ["update"]
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get"]
+  - apiGroups: ["apps"]
+    resources: ["replicasets"]
+    verbs: ["get", "list", "watch", "create", "update", "delete", "patch"]
+  - apiGroups: ["ta.ibm.com"]
+    resources: ["*"]
+    verbs: ["get", "list", "watch", "create", "update", "delete", "patch"]
+  - apiGroups: ["route.openshift.io"]
+    resources: ["routes", "routes/custom-host"]
+    verbs: ["get", "list", "watch", "create", "update", "delete", "patch"]
 ---
-# Set Role Bindings
 kind: RoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: ta-operator-sa
+  name: ibm-transformation-advisor
   namespace: trans-advisor
-  labels:
-    release: "operator"
-    app.kubernetes.io/name: ta-operator
-    app.kubernetes.io/instance: ta-instance
-    app.kubernetes.io/managed-by: helm
 subjects:
-- kind: ServiceAccount
-  name: ta-operator-sa
+  - kind: ServiceAccount
+    name: ta-operator-sa
 roleRef:
   kind: Role
-  name: ta-operator-sa
+  name: ibm-transformation-advisor
   apiGroup: rbac.authorization.k8s.io
 ---
-# Set Cluser Role
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: ta-operator-sa
-  labels:
-    release: "operator"
-    app.kubernetes.io/name: ta-operator
-    app.kubernetes.io/instance: ta-instance
-    app.kubernetes.io/managed-by: helm
+  name: ibm-transformation-advisor
 rules:
-- apiGroups: ["oauth.openshift.io"]
-  resources: ["oauthclients", "oauthclients/finalizers"]
-  verbs: ["get", "list", "watch", "create", "update", "delete", "patch"]
-- apiGroups: ["config.openshift.io"]
-  resources: ["ingresses", "infrastructures", "dnses"]
-  verbs: ["get"]
+  - apiGroups: ["oauth.openshift.io"]
+    resources: ["oauthclients", "oauthclients/finalizers", "consoleyamlsamples"]
+    verbs: ["get", "list", "watch", "create", "update", "delete", "patch"]
+  - apiGroups: ["console.openshift.io"]
+    resources: ["consoleyamlsamples"]
+    verbs: ["get", "list", "watch", "create", "update", "delete", "patch"]
+  - apiGroups: ["config.openshift.io"]
+    resources: ["ingresses", "infrastructures", "dnses"]
+    verbs: ["get"]
+  - apiGroups: ["rbac.authorization.k8s.io"]
+    resources: ["clusterrolebindings", "clusterroles", "clusterroles/finalizers", "roles", "rolebindings", "roles/finalizers", "rolebindings/finalizers"]
+    verbs: ["*"]
+  - apiGroups: [""]
+    resources: ["endpoints", "events"]
+    verbs: ["get", "list", "watch", "create", "delete", "patch"]
+  - apiGroups: ["discovery.k8s.io/v1"]
+    resources: ["endpointslices"]
+    verbs: ["get", "list", "watch", "create", "delete", "patch"]
+  - apiGroups: ["network.openshift.io"]
+    resources: ["netnamespaces", "clusternetworks", "egressnetworkpolicies"]
+    verbs: ["get", "list", "watch", "create", "delete", "patch"]
 ---
-# Set Cluster Role Bindings to the Cluster Role
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: ta-operator-sa
-  labels:
-    release: "operator"
-    app.kubernetes.io/name: ta-operator
-    app.kubernetes.io/instance: ta-instance
-    app.kubernetes.io/managed-by: helm
+  name: ibm-transformation-advisor
 subjects:
-- kind: ServiceAccount
-  name: ta-operator-sa
-  namespace: trans-advisor
+  - kind: ServiceAccount
+    name: ta-operator-sa
+    namespace: trans-advisor
 roleRef:
   kind: ClusterRole
-  name: ta-operator-sa
+  name: ibm-transformation-advisor
   apiGroup: rbac.authorization.k8s.io
----
-# Set Security Constraints
-allowHostDirVolumePlugin: false
-allowHostIPC: false
-allowHostNetwork: false
-allowHostPID: false
-allowHostPorts: false
-allowPrivilegeEscalation: true
-allowPrivilegedContainer: false
-allowedCapabilities: null
-apiVersion: security.openshift.io/v1
-defaultAddCapabilities: null
-fsGroup:
-  type: MustRunAs
-  ranges:
-  - max: 1002
-    min: 1001
-groups: []
-kind: SecurityContextConstraints
-metadata:
-  annotations:
-  name: transadv-scc
-priority: null
-readOnlyRootFilesystem: false
-requiredDropCapabilities:
-- KILL
-- MKNOD
-- SETUID
-- SETGID
-runAsUser:
-  type: MustRunAs
-  uid: 1001
-seLinuxContext:
-  type: MustRunAs
-supplementalGroups:
-  type: RunAsAny
-users: []
-volumes:
-- configMap
-- downwardAPI
-- emptyDir
-- persistentVolumeClaim
-- projected
-- secret
 ---
 # Create Catalog
 apiVersion: operators.coreos.com/v1alpha1
@@ -225,4 +157,3 @@ spec:
   updateStrategy:
     registryPoll:
       interval: 45m
-
