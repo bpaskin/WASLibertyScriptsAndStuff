@@ -42,7 +42,7 @@ metadata:
   name: ibm-websphere-automation
   namespace: websphere-automation
 spec:
-  channel: v1.5
+  channel: v1.6
   installPlanApproval: Automatic
   name: ibm-websphere-automation
   source: ibm-operator-catalog
