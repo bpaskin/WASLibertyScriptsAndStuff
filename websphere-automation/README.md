@@ -57,7 +57,7 @@ This file should be copied to the `profile_home/config/cells/cell_name` director
 
 Download the certificate:
 ```
-echo "`oc get secret external-tls-secret -n websphere-automation -o jsonpath='{.data.cert\.crt}' | base64 -d`" > cert.pem
+echo "`oc get secret wsa-default-external-tls-secret -n websphere-automation -o jsonpath='{.data.cert\.crt}' | base64 -d`" > cert.pem
 ````
 
 Place it in the truststore:
@@ -91,7 +91,7 @@ update the `server.xml`:
 
 Download the certificate to be trusted:
 ```
-echo "`oc get secret external-tls-secret -n websphere-automation -o jsonpath='{.data.cert\.crt}' | base64 -d`" > cert.pem
+echo "`oc get secret wsa-default-external-tls-secret -n websphere-automation -o jsonpath='{.data.cert\.crt}' | base64 -d`" > cert.pem
 ````
 
 Add the certificate to the truststore of the server, example:
