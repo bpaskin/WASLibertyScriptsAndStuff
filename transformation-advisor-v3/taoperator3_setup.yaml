@@ -117,7 +117,7 @@ rules:
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: ibm-transformation-advisor
+  name: ibm-transformation-advisor-trans-advisor
 subjects:
   - kind: ServiceAccount
     name: ta-operator-sa
@@ -126,21 +126,6 @@ roleRef:
   kind: ClusterRole
   name: ibm-transformation-advisor
   apiGroup: rbac.authorization.k8s.io
----
-# Create Catalog
-apiVersion: operators.coreos.com/v1alpha1
-kind: CatalogSource
-metadata:
-  name: opencloud-operators
-  namespace: openshift-marketplace
-spec:
-  displayName: IBMCS Operators
-  publisher: IBM
-  sourceType: grpc
-  image: docker.io/ibmcom/ibm-common-service-catalog:latest
-  updateStrategy:
-    registryPoll:
-      interval: 45m
 ---
 # Create Catalog
 # IBM Operator Catalog
