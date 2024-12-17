@@ -12,7 +12,7 @@ metadata:
   name: ta-operator
   namespace: trans-advisor
 spec:
-  channel: v3.10
+  channel: v4.0
   name: ibm-transformation-advisor
   source: ibm-operator-catalog
   sourceNamespace: openshift-marketplace
