@@ -23,7 +23,7 @@ metadata:
   name: open-liberty
   namespace: open-liberty
 spec:
-  channel: beta2
+  channel: 1.4
   installPlanApproval: Automatic
   name: open-liberty-certified
   source: certified-operators
