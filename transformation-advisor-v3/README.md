@@ -1,8 +1,8 @@
-# Installation of Transformation Advisor v3 on OCP #
+# Installation of Transformation Advisor v4 on OCP #
 
 
 ### Please Note ###
-If there is an existing v2.x version on the OCP Cluster, then it must be removed and the following [steps](https://www.ibm.com/docs/en/cta?topic=SS5Q6W/gettingStarted/movefrom25to30.html) must be completed before installing of v3.x.  Data migration can be done by following these [steps](https://www.ibm.com/docs/en/SS5Q6W/gettingStarted/dataMigration.html).
+If there is an existing v2.x version on the OCP Cluster, then it must be removed and the following [steps](https://www.ibm.com/docs/en/cta?topic=SS5Q6W/gettingStarted/movefrom25to30.html) must be completed before installing of v4.x.  Data migration can be done by following these [steps](https://www.ibm.com/docs/en/SS5Q6W/gettingStarted/dataMigration.html).
 
 ---
 
