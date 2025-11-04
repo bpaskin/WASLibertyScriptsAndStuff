@@ -68,5 +68,5 @@ cp features/HsahiCorpVault.mf $wlp_home/usr/extension/lib/features
 ```
 8. Copy over the feature:
 ```
-cp HashiCorpVault-1.0 $wlp_home/usr/extension/lib
+cp HashiCorpVault-1.0.jar $wlp_home/usr/extension/lib
 ```
