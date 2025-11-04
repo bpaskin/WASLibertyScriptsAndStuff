@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+IBM-Feature-Version: 2
+IBM-ShortName: HasiCorpVault-1.0
+Subsystem-Type: osgi.subsystem.feature
+Subsystem-Version: 1.0.0
+Subsystem-ManifestVersion: 1.0
+Subsystem-SymbolicName: HasiCorpVault-1.0;visibility:=public
+Subsystem-Content: com.ibm.example.security; version="[1,1.0.100)"; start-phase:="SERVICE_EARLY",
+ HashiCorpVault-1.0.jar; type=file; location:="bin/tools/extensions/ws-customPasswordEncryption/HasiCorpVault-1.0"
+Subsystem-Description: HashiCorpVault custom password encryption
+Import-Package:  javax.net.ssl

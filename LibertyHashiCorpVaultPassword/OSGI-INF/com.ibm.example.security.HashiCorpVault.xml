@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" name="com.ibm.example.security.HashiCorpVault" configuration-policy="optional" immediate="true" activate="activate" deactivate="deactivate" modified="modify">
+  <implementation class="com.ibm.example.security.HashiCorpVault"/>
+  <service>
+    <provide interface="com.ibm.wsspi.security.crypto.CustomPasswordEncryption"/>
+  </service>
+  <property name="service.vendor" type="String" value="IBM"/>
+</scr:component>
