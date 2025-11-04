@@ -44,7 +44,11 @@ export CLASSPATH=$CLASSPATH:`find $wlp_home/dev/spi/spec -name "com.ibm.wsspi.or
 ```
 3. Compile the code
 ```
-javac -cp $CLASSPATH -source 1.8 -target 1.8 com/ibm/example/security/HashiCorpVault.java
+Java 9+
+javac -cp $CLASSPATH --add-exports java.base/sun.net.www.protocol.https=ALL-UNNAMED com/ibm/example/security/HashiCorpVault.java
+
+Java 8
+javac -cp $CLASSPATH com/ibm/example/security/HashiCorpVault.java
 ```
 4. Package the manfest file first
 ```
