@@ -6,8 +6,6 @@ Subsystem-Type: osgi.subsystem.feature
 Subsystem-Version: 1.0.0
 Subsystem-ManifestVersion: 1.0
 Subsystem-SymbolicName: HashiCorpVault-1.0;visibility:=public
-Subsystem-Content:
- com.ibm.example.security.hashicorpvault; version="[1.0.0,1.1.0)"; start-phase:="SERVICE_EARLY"
-Subsystem-Description: HashiCorpVault custom password encryption for WebSphere Liberty
-IBM-API-Package:
- com.ibm.example.security; type="api"
+Subsystem-Content: com.ibm.example.security; version="[1,1.0.100)"; start-phase:="SERVICE_EARLY",
+ HashiCorpVault-1.0.jar; location:="bin/tools/extensions/ws-customPasswordEncryption/HashiCorpVault-1.0.jar"; type=file
+Subsystem-Description: %description
