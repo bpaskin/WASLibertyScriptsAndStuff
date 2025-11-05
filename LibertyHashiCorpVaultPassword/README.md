@@ -6,8 +6,6 @@ This is a feature that would replace the need to put passwords in the Liberty XM
 
 In Vault the Secrets Engine must be called secret and have secrets called WAScreds. All secrets should be kept in this path. ACL privledges must be given to read from secret/data/WAScreds
 
-The public key certificate from Vault should be imported into the proper truststore in Liberty.
-
 Each Application Server that is going to use this code must have these bootstrap.properties file:
 ```
 com.ibm.hashiURL = https://<hostname>:<port>/v1
