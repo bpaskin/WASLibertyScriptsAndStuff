@@ -6,12 +6,20 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.X509Certificate;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 import com.ibm.json.java.JSONObject;
 
@@ -37,9 +45,45 @@ public class HashiCorpVault implements CustomPasswordEncryption {
     private static final Class<?> CLASSNAME = HashiCorpVault.class;
     private static final Logger logger = Logger.getLogger(CLASSNAME.getCanonicalName());
     private static final String hashiURL = System.getProperty("com.ibm.hashiURL");
-	private static final String hashiRoleId = System.getProperty("com.ibm.hashiRoleId");
-	private static final String hashiSecretId = System.getProperty("com.ibm.hashiSecretId");
+ 	private static final String hashiRoleId = System.getProperty("com.ibm.hashiRoleId");
+ 	private static final String hashiSecretId = System.getProperty("com.ibm.hashiSecretId");
 
+    // Custom TrustManager that accepts all certificates
+    private static final TrustManager[] trustAllCerts = new TrustManager[] {
+        new X509TrustManager() {
+            public X509Certificate[] getAcceptedIssuers() {
+                return null;
+            }
+            public void checkClientTrusted(X509Certificate[] certs, String authType) {
+                // Accept all client certificates
+            }
+            public void checkServerTrusted(X509Certificate[] certs, String authType) {
+                // Accept all server certificates
+            }
+        }
+    };
+
+    // Custom HostnameVerifier that accepts all hostnames
+    private static final HostnameVerifier trustAllHostnames = new HostnameVerifier() {
+        public boolean verify(String hostname, SSLSession session) {
+            return true; // Accept all hostnames
+        }
+    };
+
+    /**
+     * Configures the HttpsURLConnection to accept any SSL certificate
+     */
+    private void configureSSLToAcceptAllCertificates(HttpsURLConnection connection) {
+        try {
+            SSLContext sc = SSLContext.getInstance("SSL");
+            sc.init(null, trustAllCerts, new java.security.SecureRandom());
+            connection.setSSLSocketFactory(sc.getSocketFactory());
+            connection.setHostnameVerifier(trustAllHostnames);
+            logger.fine("SSL configured to accept all certificates");
+        } catch (NoSuchAlgorithmException | KeyManagementException e) {
+            logger.log(Level.WARNING, "Failed to configure SSL to accept all certificates", e);
+        }
+    }
 
     public void initialize(Map initialization_data) {}
 
@@ -88,8 +132,12 @@ public class HashiCorpVault implements CustomPasswordEncryption {
 				logger.finest("sending length : "  + postDataLength);
 				
 				// setup the HTTP Connection
-				URL url = new URL(null, hashiURL + "/auth/approle/login", new sun.net.www.protocol.https.Handler()); 
-				HttpsURLConnection connection = (HttpsURLConnection) url.openConnection(); 
+				URL url = new URL(null, hashiURL + "/auth/approle/login", new sun.net.www.protocol.https.Handler());
+				HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
+				
+				// Configure SSL to accept any certificate
+				configureSSLToAcceptAllCertificates(connection);
+				
 				connection.setDoOutput(true);
 				connection.setDoInput(true);
 				connection.setRequestMethod("POST");
@@ -132,8 +180,12 @@ public class HashiCorpVault implements CustomPasswordEncryption {
 				
 				// ready to send the next request with the token
 				// to get the actual password
-				url = new URL(null, hashiURL + "/secret/data/WAScreds", new sun.net.www.protocol.https.Handler()); 
-				connection = (HttpsURLConnection) url.openConnection(); 
+				url = new URL(null, hashiURL + "/secret/data/WAScreds", new sun.net.www.protocol.https.Handler());
+				connection = (HttpsURLConnection) url.openConnection();
+				
+				// Configure SSL to accept any certificate
+				configureSSLToAcceptAllCertificates(connection);
+				
 				connection.setDoOutput(true);
 				connection.setRequestProperty("X-Vault-Token", token);
 				connection.setRequestMethod("GET");
