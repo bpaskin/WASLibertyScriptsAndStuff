@@ -6,9 +6,11 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -110,7 +112,9 @@ public class HashiCorpVault implements CustomPasswordEncryption {
 		logger.fine("Entering decrypt()" + encryptedInfo);
 		
 		String password = null;
-		String encPassword = new String(encryptedInfo.getEncryptedBytes());
+		//String encPassword = new String(encryptedInfo.getEncryptedBytes(), StandardCharsets.UTF_8);
+		String encPassword = Base64.getEncoder().encodeToString(encryptedInfo.getEncryptedBytes());
+		//byte[] pass = encryptedInfo.getEncryptedBytes();
 		logger.finer("Password : " + encPassword);
 		
 		// make sure that the custom properties have values or throw a password error
@@ -154,6 +158,9 @@ public class HashiCorpVault implements CustomPasswordEncryption {
 					in = new BufferedReader(new InputStreamReader(connection.getInputStream(), "UTF-8"));
 				} else {
 					in = new BufferedReader(new InputStreamReader(connection.getErrorStream(), "UTF-8"));
+					JSONObject response = JSONObject.parse(in);
+					throw new PasswordDecryptException(response.toString());
+
 				}
 				
 				// get character by character of the response and put it together
