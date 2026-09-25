@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.ibm.example.vault</groupId>
+  <artifactId>vault-jdbc</artifactId>
+  <version>1.0.2</version>
+  <packaging>war</packaging>
+  <name>Vault Secret JDBC Driver</name>
+  <description>A small read-only JDBC adapter for HashiCorp Vault KV secrets.</description>
+
+  <properties>
+    <maven.compiler.release>8</maven.compiler.release>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <!-- One-time local API setup; this ignored directory survives mvn clean. -->
+    <was.public.jar>${project.basedir}/work/websphere-api/was_public.jar</was.public.jar>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>io.openliberty</groupId>
+      <artifactId>com.ibm.json4j</artifactId>
+      <version>1.0.112.RELEASE</version>
+      <scope>provided</scope>
+    </dependency>
+    <!-- Servlet API provided by Liberty at runtime; needed only to compile the servlet. -->
+    <dependency>
+      <groupId>jakarta.servlet</groupId>
+      <artifactId>jakarta.servlet-api</artifactId>
+      <version>4.0.4</version>
+      <scope>provided</scope>
+    </dependency>
+    <!-- Always compile the tWAS helper. Server APIs are not packaged. -->
+    <dependency>
+      <groupId>com.ibm.websphere.local</groupId>
+      <artifactId>was-public</artifactId>
+      <version>local</version>
+      <scope>system</scope>
+      <systemPath>${was.public.jar}</systemPath>
+    </dependency>
+    <dependency>
+      <groupId>javax.resource</groupId>
+      <artifactId>javax.resource-api</artifactId>
+      <version>1.7.1</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <version>5.12.2</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <repositories>
+    <repository>
+      <id>openliberty</id>
+      <url>https://public.dhe.ibm.com/ibmdl/export/pub/software/olrepo/</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+
+  <build>
+    <plugins>
+      <!-- 1. Produce the driver JAR first within prepare-package.
+              Declaration order within a phase determines execution order, so
+              maven-jar-plugin must appear before maven-resources-plugin here. -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>3.4.2</version>
+        <executions>
+          <execution>
+            <id>produce-driver-jar</id>
+            <phase>prepare-package</phase>
+            <goals><goal>jar</goal></goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- 2. Copy the fully-compiled driver JAR to the Liberty shared resources
+              directory. Runs second within prepare-package (declared after jar plugin). -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <version>3.3.1</version>
+        <executions>
+          <execution>
+            <id>stage-driver-jar</id>
+            <phase>prepare-package</phase>
+            <goals><goal>copy-resources</goal></goals>
+            <configuration>
+              <outputDirectory>
+                ${project.build.directory}/liberty/wlp/usr/shared/resources/vault-jdbc
+              </outputDirectory>
+              <resources>
+                <resource>
+                  <directory>${project.build.directory}</directory>
+                  <includes>
+                    <include>vault-jdbc-${project.version}.jar</include>
+                  </includes>
+                  <filtering>false</filtering>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- 3. Build the WAR containing only the servlet.
+              The driver classes (VaultDriver, VaultClient, VaultConfig, etc.) and
+              the META-INF/services SPI file must NOT be in WEB-INF/classes — they
+              belong exclusively in the shared library JAR that Liberty's JDBC
+              classloader loads. If they appear in both places the web classloader
+              loads a second copy of VaultDriver from the WAR, bypasses the library
+              SPI registration, and Liberty reports "Provider not found". -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-war-plugin</artifactId>
+        <version>3.5.1</version>
+        <configuration>
+          <packagingExcludes>
+            WEB-INF/lib/vault-jdbc-*.jar,
+            WEB-INF/classes/META-INF/,
+            WEB-INF/classes/com/ibm/example/vault/JdbcObjects*.class,
+            WEB-INF/classes/com/ibm/example/vault/SecretQuery.class,
+            WEB-INF/classes/com/ibm/example/vault/VaultClient.class,
+            WEB-INF/classes/com/ibm/example/vault/VaultConfig.class,
+            WEB-INF/classes/com/ibm/example/vault/VaultDriver.class,
+            WEB-INF/classes/com/ibm/example/vault/VaultConnectionPoolDataSource.class,
+            WEB-INF/classes/com/ibm/example/vault/VaultPooledConnection.class,
+            WEB-INF/classes/com/ibm/example/vault/was/**
+          </packagingExcludes>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.14.1</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>3.5.4</version>
+      </plugin>
+
+      <plugin>
+        <groupId>io.openliberty.tools</groupId>
+        <artifactId>liberty-maven-plugin</artifactId>
+        <version>3.11.4</version>
+        <configuration>
+          <runtimeArtifact>
+            <groupId>io.openliberty</groupId>
+            <artifactId>openliberty-runtime</artifactId>
+            <type>zip</type>
+          </runtimeArtifact>
+          <configDirectory>${project.basedir}/src/main/liberty/config</configDirectory>
+          <serverName>vault-example</serverName>
+          <stripVersion>true</stripVersion>
+          <appsDirectory>apps</appsDirectory>
+        </configuration>
+        <executions>
+          <execution>
+            <id>liberty-create-and-install</id>
+            <phase>package</phase>
+            <goals>
+              <goal>create</goal>
+              <goal>install-feature</goal>
+              <goal>deploy</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>

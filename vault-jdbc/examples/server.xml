@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<server description="Vault Secret JDBC Driver example">
+
+    <!-- Merge these features into the server that hosts your application. -->
+    <featureManager>
+        <feature>jdbc-4.2</feature>
+        <feature>jndi-1.0</feature>
+        <!-- Supplies com.ibm.json.java; JSON4J is a provided dependency. -->
+        <feature>json-1.0</feature>
+        <!-- Required for VaultSecretServlet and annotation-based servlet discovery. -->
+        <feature>servlet-4.0</feature>
+    </featureManager>
+
+    <!-- Copy only the driver JAR to wlp/usr/shared/resources/vault-jdbc/. -->
+    <library id="vaultJdbcLibrary" apiTypeVisibility="spec,ibm-api,api,stable">
+        <fileset dir="${shared.resource.dir}/vault-jdbc" includes="vault-jdbc-1.0.2.jar"/>
+    </library>
+
+    <!-- Liberty discovers VaultDriver through META-INF/services/java.sql.Driver. -->
+    <jdbcDriver id="vaultJdbcDriver" libraryRef="vaultJdbcLibrary"/>
+
+    <!-- Set these environment variables before starting Liberty.
+         These credentials authenticate the Vault user; they are not the retrieved secret. -->
+    <authData id="vaultLogin"
+              user="${env.VAULT_USER}"
+              password="${env.VAULT_PASSWORD}"/>
+
+    <dataSource id="vaultSecrets"
+                jndiName="jdbc/vaultSecrets"
+                type="java.sql.Driver"
+                jdbcDriverRef="vaultJdbcDriver"
+                containerAuthDataRef="vaultLogin"
+                transactional="false"
+                isolationLevel="TRANSACTION_NONE"
+                statementCacheSize="0">
+
+        <!-- Each physical connection logs in and owns a Vault token.
+             Discard it on close, allowing revokeOnClose to revoke that token.
+             Direct JNDI lookups use vaultLogin and receive unshared connections. -->
+        <connectionManager minPoolSize="0"
+                           maxPoolSize="10"
+                           agedTimeout="0"
+                           enableSharingForDirectLookups="false"
+                           enableContainerAuthForDirectLookups="true"/>
+
+        <!-- VAULT_JDBC_URL example: jdbc:vault:https://vault.example.com:8200
+             The path is relative to the mount; omit the KV v2 data/ segment.
+             Change secretPath/passwordField to the secret you want to retrieve.
+             Optional properties include namespace and secretVersion. -->
+        <properties URL="${env.VAULT_JDBC_URL}"
+                    authMount="userpass"
+                    mount="secret"
+                    kvVersion="2"
+                    secretPath="apps/database"
+                    passwordField="db_password"
+                    connectTimeoutSeconds="10"
+                    requestTimeoutSeconds="15"
+                    revokeOnClose="true"
+                    allowHttp="true"/>
+    </dataSource>
+
+    <!-- Deploy the example WAR. Adjust the location to match your build output.
+         The servlet is mapped to /vault-example/secret by the @WebServlet annotation.
+
+         Usage:
+           GET /vault-example/secret
+               Uses the default secretPath and passwordField from the dataSource above.
+
+           GET /vault-example/secret?path=apps/database&field=db_password
+               Overrides path and field for a one-off lookup.
+
+         The Vault endpoint's certificate must be trusted by the JVM used by Liberty.
+         Set VAULT_USER, VAULT_PASSWORD, and VAULT_JDBC_URL before starting Liberty. -->
+    <webApplication id="vault-example"
+                    location="${server.config.dir}/apps/vault-example.war"
+                    contextRoot="/vault-example">
+        <!-- Grant the web app access to the vault-jdbc library so the driver
+             class and its JSON4J dependency are visible on the class path. -->
+        <classloader commonLibraryRef="vaultJdbcLibrary"/>
+    </webApplication>
+
+    <!-- Configure the application's usual features and deployment separately.
+         The Vault endpoint's certificate must be trusted by the JVM used by Liberty. -->
+
+     <logging traceSpecification="com.ibm.example.vault.*=fine"/>
+
+
+</server>
